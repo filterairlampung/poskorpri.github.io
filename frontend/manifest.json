@@ -1,0 +1,25 @@
+{
+  "name": "POS Al-Kautsar Filter Air",
+  "short_name": "POS Al-Kautsar",
+  "description": "Aplikasi Kasir, Stok, Piutang & Laporan Toko Al-Kautsar Filter Air",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f6f9",
+  "theme_color": "#005A9C",
+  "icons": [
+    {
+      "src": "foto-profil.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "foto-profil.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

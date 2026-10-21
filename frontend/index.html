@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#005A9C">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="POS Al-Kautsar">
+  <title>POS Al-Kautsar Filter Air</title>
+
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Libraries: Chart.js & html2pdf -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- Stylesheet Utama -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-root">
+
+    <!-- ==========================================
+         HALAMAN LOGIN
+    ========================================== -->
+    <div id="halaman-login">
+      <div class="login-container">
+        <div class="login-logo-icon">
+          <i class="fas fa-tint"></i>
+        </div>
+        <h2>POS Al-Kautsar Filter Air</h2>
+        <p class="login-subtitle">Silakan masuk menggunakan akun kasir/admin</p>
+
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Masukkan username..." autocomplete="username">
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" placeholder="Masukkan password..." autocomplete="current-password">
+            <button type="button" class="btn-toggle-pass" id="toggle-password" onclick="togglePasswordVisibility()" tabindex="-1" title="Lihat/Sembunyikan Password">
+              <i class="fas fa-eye" id="icon-mata"></i>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-login" onclick="cekLogin()" id="btn-submit">MASUK</button>
+        <div id="pesan-error"></div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         APLIKASI DASHBOARD UTAMA
+    ========================================== -->
+    <div id="dashboard-app">
+      <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <i class="fas fa-tint"></i> Al-Kautsar POS
+        </div>
+        <ul class="sidebar-menu">
+          <li><a class="nav-link active" onclick="bukaHalaman('home', this)"><i class="fas fa-home"></i> Home</a></li>
+          <li><a class="nav-link" onclick="bukaHalaman('kasir', this)"><i class="fas fa-shopping-cart"></i> Kasir</a></li>
+          <li><a class="nav-link" onclick="bukaHalaman('harga-khusus', this)"><i class="fas fa-tags"></i> Harga Khusus</a></li>
+          <li><a class="nav-link" onclick="bukaHalaman('aruskas', this)"><i class="fas fa-wallet"></i> Arus Kas</a></li>
+          <li><a class="nav-link" onclick="bukaHalaman('restock', this)"><i class="fas fa-box-open"></i> Barang Masuk</a></li>
+          <li><a class="nav-link" onclick="bukaHalaman('ngampas', this)"><i class="fas fa-truck"></i> Ngampas (Kanvas)</a></li>
+          <li><a class="nav-link" onclick="bukaHalaman('piutang-kasir', this)"><i class="fas fa-hand-holding-usd"></i> Piutang</a></li>
+          <li><a class="nav-link" onclick="bukaHalaman('riwayat', this)"><i class="fas fa-list-alt"></i> Riwayat Transaksi</a></li>
+          <li><a class="nav-link admin-only" onclick="bukaHalaman('laporan-menu', this)"><i class="fas fa-chart-line"></i> Laporan (Admin)</a></li>
+          <li><a class="nav-link admin-only" onclick="bukaHalaman('pengaturan', this)"><i class="fas fa-cog"></i> Pengaturan Struk</a></li>
+          <li><a onclick="logout()" style="color: #dc3545; cursor:pointer;"><i class="fas fa-sign-out-alt" style="color: #dc3545;"></i> Keluar</a></li>
+        </ul>
+      </aside>
+
+      <div class="main-wrapper" id="main-wrapper">
+        <header class="topbar">
+          <div class="topbar-left">
+            <i class="fas fa-bars" onclick="toggleSidebar()"></i>
+            <button id="btn-kembali-top" class="btn-topbar-nav" style="display:none;" onclick="kembaliKeInduk()" title="Kembali ke halaman sebelumnya">
+              <i class="fas fa-arrow-left"></i> <span>Kembali</span>
+            </button>
+            <span class="topbar-title" id="header-title">Home Dashboard</span>
+          </div>
+          <div class="topbar-right">
+            <button id="btn-refresh-sistem" class="btn-topbar-refresh" onclick="segarkanSistem()" title="Percepat / Muat Ulang Data Sistem">
+              <i class="fas fa-sync-alt" id="icon-refresh-sistem"></i> <span>Refresh</span>
+            </button>
+            <button id="btn-install-pwa" class="btn-install-top" style="display:none;" onclick="installPWA()">
+              <i class="fas fa-download"></i> Install App
+            </button>
+          </div>
+        </header>
+
+        <div id="toast-sistem" class="toast-sistem">
+          <i class="fas fa-sync-alt fa-spin"></i> Menyegarkan data sistem...
+        </div>
+
+        <div class="content-area">
+
+          <!-- ==========================================
+               PAGE 1: HOME DASHBOARD
+          ========================================== -->
+          <div id="page-home" class="page-section active">
+            <div class="welcome-banner">
+              Selamat bertugas, <span id="nama-user-tampil">Kasir</span>!
+            </div>
+
+            <div class="menu-grid">
+              <div class="menu-card" onclick="bukaHalaman('kasir')">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>Kasir Baru</h3>
+              </div>
+              <div class="menu-card" onclick="bukaHalaman('aruskas')">
+                <i class="fas fa-wallet"></i>
+                <h3>Setoran / Kas</h3>
+              </div>
+              <div class="menu-card" onclick="bukaHalaman('piutang-kasir')">
+                <i class="fas fa-hand-holding-usd"></i>
+                <h3>Piutang</h3>
+              </div>
+              <div class="menu-card admin-only" onclick="bukaHalaman('laporan-menu')">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Laporan</h3>
+              </div>
+            </div>
+
+            <div class="alert-stok" id="alert-stok">
+              <div class="alert-stok-header" onclick="toggleStokAlert()">
+                <div class="alert-stok-title">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <span>Stok Hampir Habis! (<span id="jumlah-stok-tipis">0</span> Barang)</span>
+                </div>
+                <i class="fas fa-chevron-down" id="icon-collapse-stok"></i>
+              </div>
+              <div class="alert-stok-body" id="alert-stok-body">
+                <ul id="list-stok-tipis"></ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 2: KASIR
+          ========================================== -->
+          <div id="page-kasir" class="page-section">
+            <div class="kasir-container">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px; flex-wrap:wrap;">
+                <span style="font-size:13px; color:#555; font-weight:500;">Pilih barang untuk dimasukkan ke keranjang:</span>
+                <button type="button" class="btn-tambah-produk-cepat" style="background:#0284c7;" onclick="bukaHalaman('harga-khusus')">
+                  <i class="fas fa-tags"></i> Cek Harga Pelanggan Khusus
+                </button>
+              </div>
+              <input type="text" class="search-box" id="input-cari" placeholder="Ketik nama barang..." onkeyup="cariProduk()">
+              <div class="chip-container" id="area-kategori-chips"></div>
+              <div class="produk-list" id="area-produk"></div>
+              <div class="keranjang-bar">
+                <div class="keranjang-info">
+                  <h3>Total (<span id="jumlah-item">0</span> Item)</h3>
+                  <h2 id="total-harga-tampil">Rp 0</h2>
+                </div>
+                <button class="btn-bayar" onclick="bukaModalPembayaran()">
+                  PEMBAYARAN <i class="fas fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 2B: DAFTAR HARGA PELANGGAN KHUSUS
+          ========================================== -->
+          <div id="page-harga-khusus" class="page-section">
+            <div class="section-header-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+              <h2 style="margin:0;"><i class="fas fa-tags"></i> Cek Harga Pelanggan Khusus</h2>
+              <button class="btn-wa btn-inline" style="background:var(--primary-blue);" onclick="bukaHalaman('kasir')">
+                <i class="fas fa-shopping-cart"></i> Ke Halaman Kasir
+              </button>
+            </div>
+
+            <div class="info-banner-blue">
+              <b>Cara Pakai:</b> Ketik nama pelanggan atau klik tombol nama pelanggan di bawah untuk melihat daftar harga khusus miliknya. Klik <b>"Pakai di Kasir"</b> agar nama pelanggan otomatis terisi di Kasir (termasuk jika barangnya diantar lewat supir Ngampas).
+            </div>
+
+            <div class="form-card" style="max-width:100%; padding:15px;">
+              <input type="text" class="search-box" id="input-cari-khusus" placeholder="Ketik Nama Pelanggan atau Nama Barang..." oninput="renderHalamanHargaKhusus()">
+              <div class="chip-container" id="chip-pelanggan-khusus"></div>
+              <div id="area-daftar-harga-khusus"></div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 3: ARUS KAS
+          ========================================== -->
+          <div id="page-aruskas" class="page-section">
+            <div class="form-card">
+              <h3><i class="fas fa-wallet"></i> Catat Arus Kas</h3>
+
+              <div class="input-group">
+                <label>Tanggal</label>
+                <input type="date" id="input-tgl-kas">
+              </div>
+
+              <div class="input-group">
+                <label>Kategori</label>
+                <select id="kas-kategori" onchange="ubahKategoriKas()">
+                  <option value="Pengeluaran">Pengeluaran</option>
+                  <option value="Pemasukan">Pemasukan</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <label>Jenis</label>
+                <select id="kas-jenis">
+                  <option value="Setoran">Setoran ke Bos</option>
+                  <option value="Operasional">Biaya Operasional</option>
+                  <option value="Gaji">Gaji Karyawan</option>
+                  <option value="Lain-lain">Lain-lain</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <label>Nominal (Rp)</label>
+                <input type="text" id="kas-nominal" inputmode="numeric" placeholder="Contoh: 50.000">
+              </div>
+
+              <div class="input-group">
+                <label>Keterangan</label>
+                <input type="text" id="kas-keterangan" placeholder="Isi detail pengeluaran/pemasukan...">
+              </div>
+
+              <button class="btn-simpan-trx" onclick="simpanKas(event)">SIMPAN KAS</button>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 4: BARANG MASUK / RESTOCK
+          ========================================== -->
+          <div id="page-restock" class="page-section">
+            <div class="form-card">
+              <div class="restock-header-bar">
+                <h3><i class="fas fa-boxes"></i> Mutasi Stok</h3>
+                <button type="button" class="btn-tambah-produk-cepat" onclick="bukaModalTambahProduk()">
+                  <i class="fas fa-plus-circle"></i> + Tambah Produk Baru
+                </button>
+              </div>
+
+              <div class="mutasi-info-box">
+                <div class="input-group">
+                  <label>Jenis Mutasi</label>
+                  <select id="restock-jenisTrx">
+                    <option value="Masuk">Barang Masuk (Tambah Stok)</option>
+                    <option value="Keluar">Barang Keluar (Kurangi Stok / Rakit)</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label>Tanggal Mutasi</label>
+                  <input type="date" id="input-tgl-bm">
+                </div>
+                <div class="input-group" style="margin-bottom:0;">
+                  <label>Keterangan Umum (Wajib jika Keluar)</label>
+                  <input type="text" id="restock-keterangan" placeholder="Contoh: Pembelian dari Supplier A / Rakitan Galon">
+                </div>
+              </div>
+
+              <div class="mutasi-item-box">
+                <div class="input-group">
+                  <label>1. Cari &amp; Pilih Barang</label>
+                  <input type="text" id="cari-barang-mutasi" placeholder="Ketik untuk memfilter daftar barang..." oninput="filterDropdownBarangMutasi()" style="margin-bottom: 8px;">
+                  <select id="restock-barang"></select>
+                </div>
+
+                <label class="sub-label">2. Bentuk Satuan &amp; Jumlah</label>
+                <div class="satuan-row">
+                  <select id="jenis-satuan" onchange="aturFormSatuan()">
+                    <option value="Pcs">Per Pcs (Eceran)</option>
+                    <option value="Karung">Karung</option>
+                    <option value="Kardus">Kardus</option>
+                    <option value="Paket">Paket</option>
+                  </select>
+                  <input type="number" id="restock-qty" placeholder="Isi Angka Qty..." oninput="hitungTotalPcs()">
+                </div>
+
+                <div id="wadah-isi-paket" style="display: none; margin-bottom: 10px;">
+                  <label style="font-size: 12px; color: #666;">Isi per 1 Karung/Kardus/Paket (dalam Pcs):</label>
+                  <input type="number" id="isi-per-satuan" placeholder="Contoh: 12" value="1" oninput="hitungTotalPcs()">
+                </div>
+
+                <div class="preview-pcs-box">
+                  Akan diproses ke sistem: <span id="tampil-total-pcs">0</span> Pcs
+                </div>
+
+                <button type="button" class="btn-wa" onclick="tambahKeKeranjangMutasi()" style="margin: 0; background: #0ea5e9;">
+                  <i class="fas fa-arrow-down"></i> TAMBAH KE DAFTAR
+                </button>
+              </div>
+
+              <div style="margin-bottom: 15px;">
+                <label class="sub-label">Daftar Barang yang Akan Disimpan (<span id="jumlah-item-mutasi">0</span>)</label>
+                <div class="mutasi-table-box" id="area-tabel-mutasi">
+                  <p class="empty-mutasi-text">Belum ada barang di daftar.</p>
+                </div>
+              </div>
+
+              <button class="btn-simpan-trx" id="btn-simpan-semua-mutasi" onclick="simpanSemuaMutasi()" style="background: #10b981;">
+                <i class="fas fa-save"></i> SIMPAN SEMUA TRANSAKSI
+              </button>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 5: PENGATURAN STRUK
+          ========================================== -->
+          <div id="page-pengaturan" class="page-section">
+            <div class="form-card">
+              <h3><i class="fas fa-edit"></i> Pengaturan Struk &amp; Toko</h3>
+              <p style="font-size: 13px; color: #666; text-align:center; margin-top:-10px; margin-bottom:15px;">
+                Data ini akan tampil dinamis di struk cetak Bluetooth 58mm, Browser, &amp; WhatsApp.
+              </p>
+              <form id="form-pengaturan">
+                <div class="input-group">
+                  <label>Nama Toko</label>
+                  <input type="text" id="set-nama-toko" placeholder="AL-KAUTSAR FILTER AIR" required>
+                </div>
+                <div class="input-group">
+                  <label>Alamat Toko</label>
+                  <input type="text" id="set-alamat-toko" placeholder="Jl. Ahmad Yani, Pringsewu">
+                </div>
+                <div class="input-group">
+                  <label>Kontak (Telp/WA)</label>
+                  <input type="text" id="set-kontak-toko" placeholder="0813-xxxx-xxxx">
+                </div>
+                <div class="input-group">
+                  <label>Logo Toko (Upload via File)</label>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="file" id="file-logo-upload" accept="image/png, image/jpeg, image/jpg" style="flex: 1; padding: 6px;">
+                    <button type="button" class="btn-wa" onclick="jalankanUploadLogo()" id="btn-upload-logo" style="width: auto; margin: 0; background: #28a745; font-size: 13px; padding: 10px 14px;">
+                      <i class="fas fa-upload"></i> Proses
+                    </button>
+                  </div>
+                  <div id="status-upload-logo" style="font-size: 12px; color: #666; margin-top: 5px;">*Format: JPG/PNG. Pilih file lalu klik Proses.</div>
+                  <input type="text" id="set-logo-url" placeholder="Data logo akan muncul otomatis di sini..." style="margin-top:8px; background:#e9ecef;" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Pesan Penutup (Footer Struk)</label>
+                  <textarea id="set-footer-struk" rows="3" placeholder="Terimakasih atas pesanan anda!"></textarea>
+                </div>
+                <button type="submit" class="btn-simpan-trx" id="btn-simpan-pengaturan">SIMPAN PENGATURAN</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 6: NGAMPAS / KANVAS
+          ========================================== -->
+          <div id="page-ngampas" class="page-section">
+            <div class="section-header-box">
+              <h2><i class="fas fa-truck"></i> Monitoring Supir Ngampas</h2>
+            </div>
+            <div class="info-banner-blue">
+              <b>Info:</b> Centang opsi <b>"Bawa Ngampas"</b> di Kasir saat menginput barang bawaan supir. Saat supir kembali, klik <b>Proses</b> di bawah ini untuk menghitung retur &amp; setoran aktual.
+            </div>
+            <div class="form-card" style="max-width:100%; padding:15px;">
+              <div class="rincian-table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Supir / Estimasi Bawaan</th>
+                      <th style="text-align:center;">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="body-daftar-ngampas">
+                    <tr><td colspan="3" style="text-align:center; padding: 20px; color: #999;">Klik menu Ngampas untuk memuat...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 7: PIUTANG KASIR
+          ========================================== -->
+          <div id="page-piutang-kasir" class="page-section">
+            <div class="section-header-box">
+              <h2><i class="fas fa-hand-holding-usd"></i> Daftar Piutang Pelanggan</h2>
+            </div>
+            <div class="info-banner-yellow">
+              <b>Info:</b> Menampilkan semua nota pelanggan reguler yang belum lunas (nota Ngampas dikecualikan). Klik <b>Bayar</b> untuk mencatat cicilan atau pelunasan.
+            </div>
+            <div class="form-card" style="max-width:100%; padding:15px;">
+              <div class="filter-bar">
+                <input type="text" id="search-piutang-kasir" placeholder="Cari Nama Pelanggan atau ID Nota..." onkeyup="filterPiutangKasir()">
+              </div>
+              <div class="rincian-table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>ID Nota</th>
+                      <th>Pelanggan</th>
+                      <th style="text-align:right;">Total Tagihan</th>
+                      <th style="text-align:right;">Sisa Hutang</th>
+                      <th style="text-align:center;">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="body-piutang-kasir">
+                    <tr><td colspan="6" style="text-align:center; padding: 20px; color: #999;">Memuat data piutang...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 8: RIWAYAT TRANSAKSI
+          ========================================== -->
+          <div id="page-riwayat" class="page-section">
+            <div class="tabs-container">
+              <div class="tab-btn active" onclick="gantiTabRiwayat('hari-ini', this)">Hari Ini</div>
+              <div class="tab-btn" onclick="gantiTabRiwayat('kemarin', this)">Kemarin</div>
+              <div class="tab-btn admin-only" onclick="gantiTabRiwayat('semua', this)">Semua</div>
+            </div>
+
+            <div class="lap-box-grid" style="margin-bottom:15px; padding:0;">
+              <div class="lap-box">
+                <div class="lap-box-top" style="color:#059669;">Total Pemasukan</div>
+                <div class="lap-box-val" id="riw-masuk" style="background:#10b981;">Rp 0</div>
+              </div>
+              <div class="lap-box">
+                <div class="lap-box-top" style="color:#dc2626;">Pengeluaran Toko</div>
+                <div class="lap-box-val" id="riw-keluar" style="background:#ef4444;">Rp 0</div>
+              </div>
+              <div class="lap-box">
+                <div class="lap-box-top" style="color:#d97706;">Setoran ke Bunda</div>
+                <div class="lap-box-val" id="riw-setor" style="background:#f59e0b;">Rp 0</div>
+              </div>
+              <div class="lap-box">
+                <div class="lap-box-top" style="color:#0284c7;">Sisa Uang Laci</div>
+                <div class="lap-box-val" id="riw-sisa" style="background:#0ea5e9;">Rp 0</div>
+              </div>
+            </div>
+
+            <div id="tab-hari-ini" class="tab-content active">
+              <div class="filter-bar">
+                <input type="text" id="search-hariini" placeholder="Cari ID atau Pelanggan..." onkeyup="filterRiwayatHariIni()" style="flex: 1; min-width: 160px;">
+                <button class="btn-wa btn-inline" onclick="laporBosWA('hari-ini', event)">
+                  <i class="fab fa-whatsapp"></i> Lapor Bos
+                </button>
+                <button id="btn-tutup-kas" class="btn-wa btn-inline" style="background-color: #6c757d;" onclick="jalankanTutupKasManual()">
+                  <i class="fas fa-cash-register"></i> Tutup Kas Manual
+                </button>
+              </div>
+              <div class="rincian-table-wrapper"><table id="tabel-hari-ini"></table></div>
+            </div>
+
+            <div id="tab-kemarin" class="tab-content">
+              <div class="filter-bar">
+                <input type="text" id="search-kemarin" placeholder="Cari ID atau Pelanggan..." onkeyup="filterRiwayatKemarin()" style="flex: 1; min-width: 160px;">
+                <button class="btn-wa btn-inline" onclick="laporBosWA('kemarin', event)" style="background:#f59e0b;">
+                  <i class="fab fa-whatsapp"></i> Lapor Bos (Kemarin)
+                </button>
+              </div>
+              <div class="rincian-table-wrapper"><table id="tabel-kemarin"></table></div>
+            </div>
+
+            <div id="tab-semua" class="tab-content">
+              <div class="filter-bar filter-bar-box">
+                <input type="date" id="riwayat-start" onchange="filterRiwayatSemua()">
+                <span style="font-weight:bold; color:#555;">s/d</span>
+                <input type="date" id="riwayat-end" onchange="filterRiwayatSemua()">
+                <select id="filter-jenis" onchange="filterRiwayatSemua()">
+                  <option value="Semua">Semua Jenis</option>
+                  <option value="Penjualan">Penjualan</option>
+                  <option value="Arus Kas">Arus Kas</option>
+                  <option value="Barang Masuk">Barang Masuk</option>
+                </select>
+                <button class="btn-wa btn-inline" onclick="jalankanTutupKasMasaLalu()" style="background:#6c757d;">
+                  <i class="fas fa-history"></i> Tutup Kas Tgl Ini
+                </button>
+                <button class="btn-wa btn-inline" onclick="cetakPDFRiwayat()" style="background:#dc3545;">
+                  <i class="fas fa-file-pdf"></i> Cetak PDF
+                </button>
+              </div>
+              <div class="rincian-table-wrapper" id="area-cetak-riwayat"><table id="tabel-semua"></table></div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 9: STRUK & CETAK THERMAL 58MM
+          ========================================== -->
+          <div id="page-struk" class="page-section">
+            <div class="struk-card-wrapper">
+              <div class="area-struk" id="tampilan-struk"></div>
+
+              <div class="struk-actions no-print">
+                <button class="btn-cetak-bt" onclick="cetakStrukBluetooth(event)">
+                  <i class="fab fa-bluetooth-b"></i> CETAK BLUETOOTH 58MM (LANGSUNG)
+                </button>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn-cetak-rawbt" onclick="cetakStrukRawBT()" style="flex:1;">
+                    <i class="fas fa-receipt"></i> RAWBT APP
+                  </button>
+                  <button class="btn-cetak-browser" onclick="window.print()" style="flex:1;">
+                    <i class="fas fa-print"></i> BROWSER / PDF
+                  </button>
+                </div>
+                <button class="btn-wa" onclick="kirimStrukWA()" style="margin:0;">
+                  <i class="fab fa-whatsapp"></i> KIRIM STRUK KE WHATSAPP
+                </button>
+                <button class="btn-simpan-trx" onclick="bukaHalaman('kasir')" style="background: #6c757d; margin:0;">
+                  <i class="fas fa-arrow-left"></i> KEMBALI KE KASIR
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 10: MENU LAPORAN ADMIN
+          ========================================== -->
+          <div id="page-laporan-menu" class="page-section">
+            <div class="lap-menu-banner">
+              <h3>Menu Laporan Toko</h3>
+              <div>Pilih jenis laporan analitik yang ingin Anda lihat</div>
+            </div>
+
+            <div class="lap-menu-grid">
+              <div class="lap-menu-item" onclick="bukaLaporanPenjualan()">
+                <div class="lap-circle"><i class="fas fa-chart-line"></i></div>
+                <div class="lap-menu-title">Pemasukan</div>
+              </div>
+              <div class="lap-menu-item" onclick="bukaLaporanStok()">
+                <div class="lap-circle" style="background:#28a745;"><i class="fas fa-warehouse"></i></div>
+                <div class="lap-menu-title">Stok</div>
+              </div>
+              <div class="lap-menu-item" onclick="bukaLaporanPengeluaran()">
+                <div class="lap-circle" style="background:#dc3545;"><i class="fas fa-money-bill-wave"></i></div>
+                <div class="lap-menu-title">Pengeluaran</div>
+              </div>
+              <div class="lap-menu-item" onclick="bukaLaporanPiutang()">
+                <div class="lap-circle" style="background:#17a2b8;"><i class="fas fa-hand-holding-usd"></i></div>
+                <div class="lap-menu-title">Piutang</div>
+              </div>
+              <div class="lap-menu-item" onclick="bukaLaporanTransaksi()">
+                <div class="lap-circle" style="background:#f39c12;"><i class="fas fa-exchange-alt"></i></div>
+                <div class="lap-menu-title">Transaksi</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 11: LAPORAN PEMASUKAN + SEARCH REKAP
+          ========================================== -->
+          <div id="page-laporan-penjualan" class="page-section">
+            <div class="subpage-nav-bar">
+              <button type="button" class="btn-kembali-sub" onclick="bukaHalaman('laporan-menu')">
+                <i class="fas fa-arrow-left"></i> Kembali ke Menu Laporan
+              </button>
+              <button type="button" class="btn-rincian-harian-top" onclick="bukaRincianPenjualan('ringkasan')">
+                <i class="fas fa-calendar-day"></i> Rincian Harian &amp; Grafik &gt;
+              </button>
+            </div>
+
+            <a class="btn-periode" onclick="bukaModalPeriode('penjualan')" style="font-size:16px; padding:14px;">
+              <i class="far fa-calendar-alt"></i> PERIODE WAKTU: <span id="label-periode-penjualan">BULAN INI</span> (KLIK UNTUK UBAH)
+            </a>
+
+            <div class="mama-summary-grid">
+              <div class="mama-card" style="border-left: 6px solid #10b981;">
+                <div class="mama-card-title">1. Total Uang Masuk Laci</div>
+                <div class="mama-card-desc">Penjualan Lunas + Pelunasan Hutang + Kas Masuk</div>
+                <div class="mama-card-val" id="top-masuk-global" style="color:#059669;">Rp 0</div>
+              </div>
+              <div class="mama-card" style="border-left: 6px solid #005A9C;">
+                <div class="mama-card-title">2. Total Omzet Penjualan</div>
+                <div class="mama-card-desc">Semua nota keluar (<span id="sum-trx">0</span> Nota / <span id="sum-item">0</span> Barang)</div>
+                <div class="mama-card-val" id="top-penjualan-toko" style="color:#005A9C;">Rp 0</div>
+                <span id="sum-penjualan" style="display:none;">0</span>
+              </div>
+              <div class="mama-card" style="border-left: 6px solid #f59e0b;">
+                <div class="mama-card-title">3. Total Modal Barang (HPP)</div>
+                <div class="mama-card-desc">Modal pokok dari barang yang terjual</div>
+                <div class="mama-card-val" id="top-modal-toko" style="color:#d97706;">Rp 0</div>
+              </div>
+              <div class="mama-card" style="border-left: 6px solid #16a34a; background:#f0fdf4;">
+                <div class="mama-card-title">4. Keuntungan Bersih (Laba)</div>
+                <div class="mama-card-desc">Omzet Penjualan dikurangi Modal Barang</div>
+                <div class="mama-card-val" id="top-neraca-laba" style="color:#15803d;">Rp 0</div>
+                <span id="sum-laba" style="display:none;">0</span>
+              </div>
+            </div>
+
+            <div class="rekap-search-card">
+              <div class="rekap-search-title">
+                <i class="fas fa-search-dollar"></i> Cari &amp; Hitung Total Pemasukan (Per Pelanggan / Barang / Kas)
+              </div>
+              <p style="font-size:13px; color:#555; margin:0 0 10px 0;">
+                Ketik nama pelanggan (contoh: <b>Bu Parlan</b>, <b>Parhan</b>), nama supir, atau nama barang untuk menjumlahkan otomatis uang masuk dari <b>Penjualan Kasir</b> maupun <b>Di Luar Penjualan (Arus Kas)</b> pada periode ini:
+              </p>
+              <div style="display:flex; gap:8px;">
+                <input type="text" id="input-search-rekap-pemasukan" class="search-box" style="margin:0; font-size:15px;" placeholder="Ketik contoh: Bu Parlan, Parhan, Galon, Pelunasan..." oninput="cariRekapPemasukan()">
+                <button type="button" class="btn-wa btn-inline" style="background:#64748b;" onclick="resetSearchRekapPemasukan()">Reset</button>
+              </div>
+
+              <div id="kotak-hasil-rekap-pemasukan" class="rekap-hasil-banner" style="display:none;"></div>
+
+              <div class="rincian-table-wrapper" style="margin-top:12px; max-height:380px; overflow-y:auto;">
+                <table id="tabel-rekap-pemasukan"></table>
+              </div>
+            </div>
+
+            <div class="lap-card">
+              <div class="lap-card-header"><i class="fas fa-box-open" style="color:var(--primary-blue);"></i> 3 Produk Paling Laris</div>
+              <div id="list-top-produk"></div>
+              <a class="btn-rincian" onclick="bukaRincianPenjualan('produk')">LIHAT SEMUA PRODUK &gt;</a>
+            </div>
+
+            <div class="lap-card">
+              <div class="lap-card-header"><i class="fas fa-users" style="color:var(--primary-blue);"></i> 3 Pelanggan Terbesar</div>
+              <div id="list-top-pelanggan"></div>
+              <a class="btn-rincian" onclick="bukaRincianPenjualan('pelanggan')">LIHAT SEMUA PELANGGAN &gt;</a>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 11B: RINCIAN PENJUALAN (TABEL & GRAFIK)
+          ========================================== -->
+          <div id="page-rincian-penjualan" class="page-section">
+            <div class="rincian-top-nav">
+              <div>
+                <div class="rincian-periode-title" id="label-periode-rincian-penj">BULAN INI</div>
+                <div style="font-size:12px; color:#666;">Rincian Pemasukan &amp; Penjualan</div>
+              </div>
+              <button class="btn-wa btn-inline" onclick="bukaHalaman('laporan-penjualan')" style="background:#6c757d;">
+                <i class="fas fa-arrow-left"></i> Kembali ke Laporan Pemasukan
+              </button>
+            </div>
+
+            <div class="rincian-toolbar">
+              <input type="text" id="search-rincian-penjualan" placeholder="Cari Nama Produk/Pelanggan..." onkeyup="renderRincianPenjualanView()" style="flex:1; min-width:150px;">
+              <select id="filter-metric" onchange="renderRincianPenjualanView()" style="flex:1; min-width:150px;">
+                <option value="penjualan">Sortir: Nominal Pemasukan</option>
+                <option value="laba">Sortir: Laba Bersih</option>
+                <option value="transaksi">Sortir: Jumlah Transaksi</option>
+                <option value="tanggal">Sortir: Urutan Tanggal / Nama</option>
+              </select>
+              <div class="view-toggle-group">
+                <button id="btn-view-table-penj" onclick="toggleViewMode('table', 'penjualan')" style="background:#ffc107;"><i class="fas fa-table"></i></button>
+                <button id="btn-view-chart-penj" onclick="toggleViewMode('chart', 'penjualan')" style="background:#fff;"><i class="fas fa-chart-bar"></i></button>
+              </div>
+            </div>
+
+            <div id="view-table-penj" class="rincian-table-wrapper">
+              <table id="rincian-table-penj"></table>
+            </div>
+            <div id="view-chart-penj" class="chart-wrapper" style="display:none;">
+              <canvas id="rincianCanvasPenj"></canvas>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 12: LAPORAN TRANSAKSI / MUTASI KAS
+          ========================================== -->
+          <div id="page-laporan-transaksi" class="page-section">
+            <div class="subpage-nav-bar">
+              <button type="button" class="btn-kembali-sub" onclick="bukaHalaman('laporan-menu')">
+                <i class="fas fa-arrow-left"></i> Kembali ke Menu Laporan
+              </button>
+            </div>
+
+            <div class="lap-header-bar">
+              <div class="lap-header-item">Masuk<br><b id="mutasi-masuk" style="color:#4ade80;">Rp 0</b></div>
+              <div class="lap-header-item">Keluar<br><b id="mutasi-keluar" style="color:#f87171;">Rp 0</b></div>
+              <div class="lap-header-item">Setoran Bunda<br><b id="mutasi-setoran" style="color:#fbbf24;">Rp 0</b></div>
+              <div class="lap-header-item">Saldo Laci<br><b id="mutasi-saldo" style="color:#38bdf8;">Rp 0</b></div>
+            </div>
+
+            <div class="lap-card" style="padding:15px; margin-bottom:15px;">
+              <div class="filter-bar" style="margin-bottom:0;">
+                <input type="date" id="tgl-mulai-mutasi" style="flex:1; min-width:120px;">
+                <span style="font-weight:bold;">s/d</span>
+                <input type="date" id="tgl-akhir-mutasi" style="flex:1; min-width:120px;">
+                <button onclick="loadLaporanTransaksi(event)" class="btn-simpan-trx" style="margin-top:0; background:#0ea5e9; padding:10px;">
+                  <i class="fas fa-search"></i> Tampilkan
+                </button>
+              </div>
+            </div>
+
+            <div class="rincian-table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Keterangan &amp; Jenis</th>
+                    <th style="text-align:right;">Nominal</th>
+                  </tr>
+                </thead>
+                <tbody id="body-mutasi-laporan">
+                  <tr><td colspan="3" style="text-align:center; padding:20px; color:#999;">Pilih tanggal dan klik Tampilkan.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 13: LAPORAN STOK
+          ========================================== -->
+          <div id="page-laporan-stok" class="page-section">
+            <div class="subpage-nav-bar">
+              <button type="button" class="btn-kembali-sub" onclick="bukaHalaman('laporan-menu')">
+                <i class="fas fa-arrow-left"></i> Kembali ke Menu Laporan
+              </button>
+            </div>
+
+            <div class="lap-card" style="text-align:center; padding:20px; margin-bottom: 15px;">
+              <div style="color:#666; font-size:14px; font-weight:600;">Nilai Aset Stok (Modal)</div>
+              <div class="stok-box-val" id="stok-nilai-aset">Rp 0</div>
+              <div style="font-size:13px; color:#888; margin-bottom:12px;">Total Item Fisik: <b id="stok-total-item">0</b></div>
+              <button type="button" class="btn-tambah-produk-cepat" onclick="bukaModalTambahProduk()">
+                <i class="fas fa-plus"></i> Tambah Produk Baru
+              </button>
+            </div>
+
+            <div class="stok-tabs">
+              <div class="stok-tab-btn active" onclick="gantiTabStok('daftar', this)">Daftar Stok</div>
+              <div class="stok-tab-btn" onclick="gantiTabStok('pergerakan', this)">Riwayat Pergerakan</div>
+            </div>
+
+            <div id="tab-stok-daftar" class="stok-tab-content active">
+              <div class="filter-bar">
+                <input type="text" id="search-stok" placeholder="Cari Nama Barang..." onkeyup="renderDaftarStok()">
+              </div>
+              <div class="rincian-table-wrapper"><table id="tabel-daftar-stok"></table></div>
+            </div>
+
+            <div id="tab-stok-pergerakan" class="stok-tab-content">
+              <div class="filter-bar">
+                <input type="text" id="search-pergerakan" placeholder="Cari Riwayat Barang..." onkeyup="renderPergerakanStok()">
+              </div>
+              <div class="rincian-table-wrapper"><table id="tabel-pergerakan-stok"></table></div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 14: LAPORAN PENGELUARAN + SEARCH REKAP
+          ========================================== -->
+          <div id="page-laporan-pengeluaran" class="page-section">
+            <div class="subpage-nav-bar">
+              <button type="button" class="btn-kembali-sub" onclick="bukaHalaman('laporan-menu')">
+                <i class="fas fa-arrow-left"></i> Kembali ke Menu Laporan
+              </button>
+            </div>
+
+            <a class="btn-periode" onclick="bukaModalPeriode('pengeluaran')" style="font-size:16px; padding:14px;">
+              <i class="far fa-calendar-alt"></i> PERIODE WAKTU: <span id="label-periode-pengeluaran">BULAN INI</span> (KLIK UNTUK UBAH)
+            </a>
+
+            <div class="mama-card" style="border-left: 6px solid #dc3545; text-align:center; margin-bottom:16px;">
+              <div class="mama-card-title" style="font-size:16px;">Total Pengeluaran Operasional Toko</div>
+              <div class="mama-card-desc">(Tidak termasuk uang Setoran ke Bunda)</div>
+              <div class="pengeluaran-val" id="total-pengeluaran-val" style="padding:10px 0 0 0;">Rp 0</div>
+            </div>
+
+            <div class="rekap-search-card" style="border-color:#fca5a5; background:#fffafa;">
+              <div class="rekap-search-title" style="color:#b91c1c;">
+                <i class="fas fa-search"></i> Cari &amp; Hitung Total Pengeluaran Tertentu
+              </div>
+              <p style="font-size:13px; color:#555; margin:0 0 10px 0;">
+                Ketik kata kunci pengeluaran (contoh: <b>Bayar Supir</b>, <b>Bensin</b>, <b>Listrik</b>, <b>Makan</b>) untuk melihat daftar dan total uang yang keluar pada periode ini:
+              </p>
+              <div style="display:flex; gap:8px;">
+                <input type="text" id="input-search-rekap-pengeluaran" class="search-box" style="margin:0; font-size:15px;" placeholder="Ketik contoh: Bayar Supir..." oninput="cariRekapPengeluaran()">
+                <button type="button" class="btn-wa btn-inline" style="background:#64748b;" onclick="resetSearchRekapPengeluaran()">Reset</button>
+              </div>
+
+              <div id="kotak-hasil-rekap-pengeluaran" class="rekap-hasil-bannerpeng" style="display:none;"></div>
+
+              <div class="rincian-table-wrapper" style="margin-top:12px; max-height:380px; overflow-y:auto;">
+                <table id="tabel-rekap-pengeluaran"></table>
+              </div>
+            </div>
+
+            <div class="lap-card">
+              <div class="lap-card-header"><i class="fas fa-chart-pie" style="color:#dc3545;"></i> Ringkasan per Kategori Pengeluaran</div>
+              <div id="list-top-pengeluaran"></div>
+              <a class="btn-rincian" onclick="bukaRincianPengeluaran('kategori')">LIHAT TABEL HARIAN / GRAFIK &gt;</a>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 14B: RINCIAN PENGELUARAN (TABEL & GRAFIK)
+          ========================================== -->
+          <div id="page-rincian-pengeluaran" class="page-section">
+            <div class="rincian-top-nav">
+              <div>
+                <div class="rincian-periode-title" id="label-periode-rincian-peng">BULAN INI</div>
+                <div style="font-size:12px; color:#666;" id="label-tipe-rincian-peng">Rincian Pengeluaran</div>
+              </div>
+              <button class="btn-wa btn-inline" onclick="bukaHalaman('laporan-pengeluaran')" style="background:#6c757d;">
+                <i class="fas fa-arrow-left"></i> Kembali ke Laporan Pengeluaran
+              </button>
+            </div>
+
+            <div class="rincian-toolbar">
+              <select id="tipe-rincian-peng" onchange="ubahTipeRincianPengDropdown()" style="flex:1; min-width:140px;">
+                <option value="harian">Tampilan: Per Hari</option>
+                <option value="kategori">Tampilan: Per Kategori</option>
+                <option value="riwayat">Tampilan: Detail Transaksi</option>
+              </select>
+              <select id="filter-metric-peng" onchange="renderRincianPengeluaranView()" style="flex:1; min-width:140px;">
+                <option value="tanggal">Urutkan: Tanggal / Nama</option>
+                <option value="nominal">Urutkan: Biaya Terbesar</option>
+                <option value="transaksi">Urutkan: Trx Terbanyak</option>
+              </select>
+              <div class="view-toggle-group">
+                <button id="btn-view-table-peng" onclick="toggleViewMode('table', 'pengeluaran')" style="background: #ffc107;"><i class="fas fa-table"></i></button>
+                <button id="btn-view-chart-peng" onclick="toggleViewMode('chart', 'pengeluaran')" style="background: #fff;"><i class="fas fa-chart-line"></i></button>
+              </div>
+            </div>
+
+            <div class="rincian-table-wrapper" id="view-table-peng">
+              <table id="rincian-table-peng"></table>
+            </div>
+            <div id="view-chart-peng" class="chart-wrapper" style="display:none;">
+              <canvas id="rincianCanvasPeng"></canvas>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               PAGE 15: LAPORAN PIUTANG ADMIN & RINCIAN
+          ========================================== -->
+          <div id="page-laporan-piutang" class="page-section">
+            <div class="subpage-nav-bar">
+              <button type="button" class="btn-kembali-sub" onclick="bukaHalaman('laporan-menu')">
+                <i class="fas fa-arrow-left"></i> Kembali ke Menu Laporan
+              </button>
+            </div>
+
+            <a class="btn-periode" onclick="bukaModalPeriode('piutang')">
+              <i class="far fa-calendar-alt"></i> <span id="label-periode-piutang">BULAN INI</span>
+            </a>
+
+            <div class="lap-card" style="text-align:center; padding:20px; margin-bottom: 15px;">
+              <div style="color:#666; font-size:14px; font-weight:600;">Total Sisa Piutang Aktif (Global)</div>
+              <div class="stok-box-val" style="color:var(--red-delete); font-size:26px;" id="piutang-global-val">Rp 0</div>
+            </div>
+
+            <div class="lap-box-grid" style="grid-template-columns: 1fr 1fr; padding:0; margin-bottom: 15px;">
+              <div class="lap-box">
+                <div class="lap-box-top" style="color:#721c24;">Sisa Hutang Baru (Periode Ini)</div>
+                <div class="lap-box-val" id="piutang-baru-val" style="background:#f8d7da; color:#721c24;">0</div>
+              </div>
+              <div class="lap-box">
+                <div class="lap-box-top" style="color:#155724;">Hutang Dibayar (Periode Ini)</div>
+                <div class="lap-box-val" id="piutang-bayar-val" style="background:#d4edda; color:#155724;">0</div>
+              </div>
+            </div>
+
+            <div class="lap-card">
+              <div class="lap-card-header">Daftar Pelanggan Berhutang</div>
+              <div id="list-top-piutang"></div>
+              <a class="btn-rincian" onclick="bukaRincianPiutang('pelanggan')">LIHAT RINCIAN &gt;</a>
+            </div>
+          </div>
+
+          <div id="page-rincian-piutang" class="page-section">
+            <div class="rincian-top-nav">
+              <a class="btn-periode" onclick="bukaModalPeriode('piutang')" style="margin: 0; padding: 8px 14px;">
+                <i class="far fa-calendar-alt"></i> <span id="label-periode-rincian-piutang">BULAN INI</span>
+              </a>
+              <button class="btn-wa btn-inline" onclick="bukaHalaman('laporan-piutang')" style="background:#6c757d;">
+                <i class="fas fa-arrow-left"></i> Kembali ke Laporan Piutang
+              </button>
+            </div>
+
+            <div class="stok-tabs">
+              <div class="stok-tab-btn active" onclick="gantiTabRincianPiutang('pelanggan', this)">Sisa Hutang</div>
+              <div class="stok-tab-btn" onclick="gantiTabRincianPiutang('baru', this)">Hutang Baru</div>
+              <div class="stok-tab-btn" onclick="gantiTabRincianPiutang('bayar', this)">Telah Dibayar</div>
+            </div>
+            <div class="rincian-table-wrapper"><table id="rincian-table-piutang"></table></div>
+          </div>
+
+        </div> <!-- End .content-area -->
+      </div> <!-- End .main-wrapper -->
+    </div> <!-- End #dashboard-app -->
+
+    <!-- ==========================================
+         MODAL 1: PEMBAYARAN KASIR
+    ========================================== -->
+    <div class="modal-overlay" id="modal-pembayaran">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3><i class="fas fa-cash-register"></i> Pembayaran Kasir</h3>
+          <i class="fas fa-times" onclick="tutupModal('modal-pembayaran')"></i>
+        </div>
+
+        <div class="input-group">
+          <label>Tanggal Transaksi</label>
+          <input type="date" id="input-tanggal-trx">
+        </div>
+
+        <div class="ngampas-toggle-box">
+          <label class="checkbox-ngampas-label">
+            <input type="checkbox" id="cek-bawa-ngampas" onchange="toggleModeNgampasKasir()">
+            <span><i class="fas fa-truck"></i> <b>Bawa Ngampas (Kanvas Supir)</b></span>
+          </label>
+          <small>Otomatis memberi awalan "NGAMPAS - " &amp; mengunci status ke Hutang Tanpa DP.</small>
+        </div>
+
+        <div class="input-group" id="wadah-supir-ngampas" style="display:none; background:#eef2ff; padding:10px; border-radius:8px; border:1px dashed #6366f1;">
+          <label style="color:#3730a3; font-weight:700;"><i class="fas fa-id-badge"></i> Nama Supir Pengantar (Wajib)</label>
+          <input type="text" id="nama-supir-ngampas" placeholder="Contoh: Hapis, Vais, Budi...">
+        </div>
+
+        <div class="input-group">
+          <label id="label-input-pelanggan">Nama Pelanggan</label>
+          <input type="text" id="nama-pelanggan" list="list-pelanggan-khusus-dl" oninput="cekHargaPelanggan()" onkeyup="cekHargaPelanggan()" placeholder="Ketik nama pelanggan (atau pilih pelanggan khusus)...">
+          <datalist id="list-pelanggan-khusus-dl"></datalist>
+          <div id="info-harga-khusus-aktif" style="display:none; margin-top:5px; font-size:12px; color:#15803d; font-weight:600; background:#dcfce7; padding:5px 8px; border-radius:6px; border:1px solid #86efac;"></div>
+        </div>
+
+        <div class="keranjang-list" id="rincian-keranjang"></div>
+
+        <div class="diskon-panel">
+          <div><b>Diskon Total Tagihan (Rp)</b></div>
+          <input type="text" id="input-diskon" inputmode="numeric" onkeyup="hitungTotalAkhir()" placeholder="0" style="width:120px; text-align:right;">
+        </div>
+
+        <div class="total-box">
+          <h4>TAGIHAN AKHIR</h4>
+          <h2 id="modal-total-tagihan">Rp 0</h2>
+        </div>
+
+        <div class="input-group">
+          <label>Status Transaksi</label>
+          <select id="status-trx" onchange="sinkronStatusPembayaran('status')" style="margin-bottom: 10px;">
+            <option value="Lunas">Lunas</option>
+            <option value="Hutang">Hutang / Cicil</option>
+          </select>
+
+          <label>Metode Pembayaran</label>
+          <select id="metode-bayar" onchange="sinkronStatusPembayaran('metode')">
+            <option value="Tunai">Tunai</option>
+            <option value="Transfer">Transfer</option>
+            <option value="Qris">Qris</option>
+            <option value="Belum Bayar">Belum Bayar (Tanpa DP)</option>
+          </select>
+        </div>
+
+        <div class="input-group" id="area-nominal-bayar">
+          <label>Uang Diterima / DP (Rp)</label>
+          <input type="text" id="nominal-bayar" inputmode="numeric" onkeyup="hitungKembalian()" placeholder="0">
+        </div>
+
+        <div class="kembalian-box" id="box-kembalian">Kembalian: Rp 0</div>
+
+        <button class="btn-simpan-trx" id="btn-proses-trx" onclick="prosesTransaksi()">SIMPAN TRANSAKSI</button>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 2: PILIH PERIODE LAPORAN
+    ========================================== -->
+    <div class="modal-overlay" id="modal-periode">
+      <div class="modal-content" style="max-width:340px;">
+        <div class="modal-header">
+          <h3>Pilih Periode</h3>
+          <i class="fas fa-times" onclick="tutupModal('modal-periode')"></i>
+        </div>
+        <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #ccc;">
+          <label style="font-size: 13px; font-weight: 600; color: #555;">Pilih Bulan Tertentu:</label>
+          <div style="display:flex; gap:8px; margin-top:5px;">
+            <input type="month" id="input-bulan-tertentu" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:6px;">
+            <button onclick="pilihBulanTertentu()" style="background:var(--primary-blue); color:white; border:none; border-radius:6px; padding:8px 14px; cursor:pointer; font-weight:bold;">CARI</button>
+          </div>
+        </div>
+        <button class="btn-per-item" onclick="pilihPeriode('Hari Ini')">Hari Ini</button>
+        <button class="btn-per-item" onclick="pilihPeriode('Kemarin')">Kemarin</button>
+        <button class="btn-per-item" onclick="pilihPeriode('Minggu Ini')">Minggu Ini</button>
+        <button class="btn-per-item" onclick="pilihPeriode('Minggu Lalu')">Minggu Lalu</button>
+        <button class="btn-per-item" onclick="pilihPeriode('Bulan Ini')">Bulan Ini</button>
+        <button class="btn-per-item" onclick="pilihPeriode('Bulan Lalu')">Bulan Lalu</button>
+        <button class="btn-per-item" onclick="pilihPeriode('Tahun Ini')">Tahun Ini</button>
+        <button class="btn-per-item" onclick="pilihPeriode('Tahun Lalu')">Tahun Lalu</button>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 3: TAMBAH PRODUK BARU
+    ========================================== -->
+    <div class="modal-overlay" id="modal-tambah-produk">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3><i class="fas fa-box"></i> Tambah Produk Baru</h3>
+          <i class="fas fa-times" onclick="tutupModal('modal-tambah-produk')"></i>
+        </div>
+        <div class="input-group">
+          <label>Nama Barang</label>
+          <input type="text" id="add-nama" placeholder="Contoh: Tabung FRP 1054">
+        </div>
+        <div class="input-group">
+          <label>Kategori</label>
+          <input type="text" id="add-kategori" placeholder="Contoh: Tabung, Media Filter, Galon">
+        </div>
+        <div style="display:flex; gap:10px;">
+          <div class="input-group" style="flex:1;">
+            <label>Harga Modal (Beli)</label>
+            <input type="text" id="add-modal" inputmode="numeric" placeholder="0">
+          </div>
+          <div class="input-group" style="flex:1;">
+            <label>Harga Jual</label>
+            <input type="text" id="add-jual" inputmode="numeric" placeholder="0">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Stok Awal (Pcs)</label>
+          <input type="number" id="add-stok" placeholder="0">
+        </div>
+        <button class="btn-simpan-trx" id="btn-simpan-produk" onclick="simpanProdukBaru()">SIMPAN PRODUK</button>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 4: SELESAIKAN NGAMPAS / KANVAS
+    ========================================== -->
+    <div class="modal-overlay" id="modal-retur-ngampas">
+      <div class="modal-content" style="max-width:460px;">
+        <div class="modal-header">
+          <h3><i class="fas fa-truck-loading"></i> Selesaikan Ngampas</h3>
+          <i class="fas fa-times" onclick="tutupModal('modal-retur-ngampas')"></i>
+        </div>
+        <p id="label-supir-ngampas" style="font-weight:bold; color:var(--primary-blue); margin:0 0 10px 0; font-size:15px;">Supir: -</p>
+
+        <div class="rincian-table-wrapper" style="max-height: 220px; overflow-y:auto; margin-bottom:15px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Barang</th>
+                <th style="text-align:center;">Bawa</th>
+                <th style="text-align:center; background:#dc3545;">Retur (Kembali)</th>
+              </tr>
+            </thead>
+            <tbody id="body-retur-ngampas"></tbody>
+          </table>
+        </div>
+
+        <div class="ngampas-setoran-box">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
+            <span style="font-weight:600; color:#166534; font-size:13px;">Total Seharusnya:</span>
+            <span id="estimasi-setoran-ngampas" style="font-size:15px; font-weight:bold; color:#15803d;">Rp 0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span style="font-weight:bold; color:#15803d; font-size:14px;">Setoran Aktual (Rp):</span>
+            <input type="text" id="input-setoran-aktual" inputmode="numeric" class="input-setoran-hijau" onkeyup="hitungDiskonNgampas()" onchange="hitungDiskonNgampas()">
+          </div>
+          <div id="info-diskon-ngampas" style="text-align:right; font-size:12px; color:#dc3545; margin-bottom:10px; display:none;">
+            Selisih masuk sbg Diskon Nota: <b id="angka-diskon-ngampas">Rp 0</b>
+          </div>
+          <div class="input-group" style="margin-bottom:0;">
+            <label style="color:#166534; font-weight:600;">Metode Setoran Supir:</label>
+            <select id="metode-setoran-ngampas">
+              <option value="Tunai">Tunai (Masuk Laci Kasir)</option>
+              <option value="Transfer">Transfer / QRIS (Auto-Setor ke Bunda)</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn-simpan-trx" id="btn-simpan-retur-ngampas" onclick="simpanReturNgampas(event)">
+          <i class="fas fa-check-circle"></i> COCOK, SIMPAN PELUNASAN NGAMPAS
+        </button>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 5: PELUNASAN PIUTANG REGULER
+    ========================================== -->
+    <div class="modal-overlay" id="modal-bayar-piutang">
+      <div class="modal-content" style="max-width:420px;">
+        <div class="modal-header">
+          <h3><i class="fas fa-hand-holding-usd"></i> Pembayaran Piutang</h3>
+          <i class="fas fa-times" onclick="tutupModal('modal-bayar-piutang')"></i>
+        </div>
+
+        <div class="piutang-summary-box">
+          <div>Nota: <b id="piutang-id-nota">-</b></div>
+          <div>Pelanggan: <b id="piutang-nama-pelanggan" style="color:var(--primary-blue);">-</b></div>
+          <div style="margin-top:6px; font-size:14px;">Sisa Hutang Saat Ini: <b id="piutang-sisa-tampil" style="color:#dc3545; font-size:16px;">Rp 0</b></div>
+        </div>
+
+        <div class="input-group">
+          <label>Nominal Uang Dibayarkan Hari Ini (Rp)</label>
+          <input type="text" id="input-bayar-piutang" inputmode="numeric" placeholder="Masukkan nominal cicilan / lunas...">
+        </div>
+
+        <div class="input-group">
+          <label>Metode Pembayaran</label>
+          <select id="metode-bayar-piutang">
+            <option value="Tunai">Tunai (Masuk Laci Fisik)</option>
+            <option value="Transfer">Transfer / QRIS (Auto-Setor ke Bunda)</option>
+          </select>
+        </div>
+
+        <button class="btn-simpan-trx" id="btn-konfirmasi-piutang" onclick="konfirmasiBayarPiutang()">
+          <i class="fas fa-money-bill-wave"></i> SIMPAN PEMBAYARAN HUTANG
+        </button>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 6: EDIT RIWAYAT TRANSAKSI (ADMIN)
+    ========================================== -->
+    <div class="modal-overlay" id="modal-edit-riwayat">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="judul-modal-edit"><i class="fas fa-edit"></i> Edit Transaksi</h3>
+          <i class="fas fa-times" onclick="tutupModal('modal-edit-riwayat')"></i>
+        </div>
+        <div id="form-edit-dinamis"></div>
+        <button class="btn-simpan-trx" id="btn-simpan-edit" onclick="simpanEditRiwayat()">SIMPAN PERUBAHAN</button>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 7: PREVIEW LAPORAN PDF SHIFT KASIR
+    ========================================== -->
+    <div class="modal-overlay" id="modal-preview-lapor">
+      <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <div class="modal-header">
+          <h3 style="color: #dc3545;"><i class="fas fa-file-pdf"></i> Laporan PDF Siap</h3>
+          <i class="fas fa-times" onclick="tutupModal('modal-preview-lapor')"></i>
+        </div>
+        <p style="font-size: 13px; color: #555; margin-bottom: 15px;">
+          Klik <b>Unduh PDF</b>, lalu klik <b>Buka WA Bos</b> untuk mengirim laporan shift kasir.
+        </p>
+
+        <div style="padding: 20px; background: #f8fafc; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd;">
+          <i class="fas fa-file-pdf" style="font-size: 50px; color: #dc3545;"></i>
+          <h4 style="margin: 12px 0 0 0; color: #333; font-size: 14px;" id="nama-file-pdf">Laporan_Toko.pdf</h4>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button class="btn-wa" style="width: 50%; background: #dc3545; margin:0;" onclick="downloadPDFLaporan(event)">
+            <i class="fas fa-download"></i> Unduh PDF
+          </button>
+          <button class="btn-wa" style="width: 50%; background: var(--wa-green); margin:0;" onclick="bukaWASetelahFoto()">
+            <i class="fab fa-whatsapp"></i> Buka WA Bos
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- End .app-root -->
+
+  <!-- Script Aplikasi Utama -->
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1798 @@
+/* ==========================================
+   VARIABEL & RESET GLOBAL (POIN 2: RESPONSIF HP)
+========================================== */
+:root {
+  --primary-blue: #005A9C;
+  --primary-dark: #004477;
+  --accent-green: #28a745;
+  --bg-white: #f4f6f9;
+  --text-dark: #333333;
+  --sidebar-width: 250px;
+  --wa-green: #25D366;
+  --red-delete: #dc3545;
+  --gold: #ffc107;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-white);
+  margin: 0;
+  padding: 0;
+  color: var(--text-dark);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+.app-root {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ==========================================
+   HALAMAN LOGIN (POIN 3)
+========================================== */
+#halaman-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #f4f6f9 100%);
+}
+
+.login-container {
+  background: white;
+  padding: 32px 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 90, 156, 0.12);
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.login-logo-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #e0f2fe;
+  color: var(--primary-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 12px auto;
+}
+
+.login-container h2 {
+  color: var(--primary-blue);
+  margin: 0 0 6px 0;
+  font-size: 20px;
+}
+
+.login-subtitle {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 24px 0;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  padding-right: 42px !important;
+}
+
+.btn-toggle-pass {
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #777;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-toggle-pass:hover {
+  color: var(--primary-blue);
+}
+
+#pesan-error {
+  color: var(--red-delete);
+  font-size: 13px;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+/* ==========================================
+   INPUT & TOMBOL UMUM
+========================================== */
+.input-group {
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.input-group label, .sub-label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #444;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea,
+.filter-bar input,
+.filter-bar select,
+.rincian-toolbar input,
+.rincian-toolbar select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  background: #fff;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+  border-color: var(--primary-blue);
+}
+
+.btn-login,
+.btn-simpan-trx {
+  width: 100%;
+  background: var(--accent-green);
+  color: white;
+  border: none;
+  padding: 13px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  margin-top: 5px;
+  transition: opacity 0.2s;
+}
+
+.btn-login:disabled,
+.btn-simpan-trx:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-wa {
+  background: var(--wa-green);
+  color: white;
+  border: none;
+  padding: 11px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.btn-wa.btn-inline {
+  width: auto;
+  margin-bottom: 0;
+  padding: 9px 14px;
+  font-size: 13px;
+}
+
+/* ==========================================
+   LAYOUT DASHBOARD, SIDEBAR & TOPBAR
+========================================== */
+#dashboard-app {
+  display: none;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  background: white;
+  height: 100vh;
+  position: fixed;
+  left: -260px;
+  top: 0;
+  transition: left 0.28s ease;
+  z-index: 1000;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+.sidebar-header {
+  background: var(--primary-blue);
+  color: white;
+  padding: 18px 20px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  color: var(--text-dark);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+}
+
+.sidebar-menu a i {
+  width: 26px;
+  color: var(--primary-blue);
+  font-size: 16px;
+}
+
+.sidebar-menu a.active {
+  background: #e9ecef;
+  color: var(--primary-blue);
+  border-left-color: var(--primary-blue);
+  font-weight: 600;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+.overlay.active {
+  display: block;
+}
+
+.main-wrapper {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  background: var(--primary-blue);
+  color: white;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar i.fa-bars {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.topbar-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.btn-install-top {
+  background: #ffc107;
+  color: #000;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+.content-area {
+  padding: 16px;
+  flex-grow: 1;
+  width: 100%;
+  max-width: 100%;
+}
+
+.page-section {
+  display: none;
+  animation: fadeIn 0.25s ease;
+}
+
+.page-section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==========================================
+   HOME DASHBOARD & COLLAPSIBLE STOK (POIN 4)
+========================================== */
+.welcome-banner {
+  background: white;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 16px;
+}
+
+.welcome-banner span {
+  color: var(--primary-blue);
+  font-weight: 700;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.menu-card {
+  background: white;
+  padding: 20px 12px;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.menu-card:active {
+  transform: scale(0.98);
+}
+
+.menu-card i {
+  font-size: 32px;
+  color: var(--primary-blue);
+  margin-bottom: 8px;
+}
+
+.menu-card h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.alert-stok {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-left: 5px solid #ef4444;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  display: none;
+  overflow: hidden;
+}
+
+.alert-stok-header {
+  padding: 12px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  color: #b91c1c;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.alert-stok-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alert-stok-body {
+  padding: 0 15px 12px 15px;
+  max-height: 220px;
+  overflow-y: auto;
+  border-top: 1px dashed #fca5a5;
+}
+
+.alert-stok-body.collapsed {
+  display: none;
+}
+
+.alert-stok ul {
+  margin: 10px 0 0 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: #7f1d1d;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   HALAMAN KASIR (POIN 5 & 8)
+========================================== */
+.kasir-container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 110px);
+  position: relative;
+}
+
+.search-box {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  margin-bottom: 10px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.chip-container {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+  padding: 6px 2px;
+  white-space: nowrap;
+  align-items: center;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chip-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.chip-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.chip {
+  background: #e9ecef;
+  padding: 7px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #444;
+  font-weight: 500;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.chip.active {
+  background: var(--primary-blue);
+  color: white;
+  border-color: var(--primary-blue);
+}
+
+.produk-list {
+  flex-grow: 1;
+  padding-bottom: 95px;
+}
+
+.produk-item {
+  background: white;
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.produk-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.produk-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: var(--primary-blue);
+  word-wrap: break-word;
+}
+
+.produk-info p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.btn-tambah {
+  background: var(--accent-green);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  background: #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--primary-blue);
+  flex-shrink: 0;
+}
+
+.btn-qty {
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+  width: 34px;
+  height: 34px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.qty-input {
+  width: 42px;
+  text-align: center;
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+  font-size: 14px;
+}
+
+.keranjang-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  padding: 12px 16px;
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+
+.keranjang-info h3 {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.keranjang-info h2 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--primary-blue);
+  font-weight: 700;
+}
+
+.btn-bayar {
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ngampas-toggle-box {
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+.checkbox-ngampas-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #3730a3;
+  font-size: 14px;
+}
+
+.checkbox-ngampas-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.ngampas-toggle-box small {
+  display: block;
+  font-size: 11px;
+  color: #4f46e5;
+  margin-top: 4px;
+}
+
+/* ==========================================
+   BARANG MASUK / MUTASI (POIN 7)
+========================================== */
+.restock-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.restock-header-bar h3 {
+  margin: 0 !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.btn-tambah-produk-cepat {
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+.mutasi-info-box {
+  background: #eef2f5;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #cbd5e1;
+}
+
+.mutasi-item-box {
+  border: 1px dashed #0284c7;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  background: #f8fafc;
+}
+
+.satuan-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.satuan-row select,
+.satuan-row input {
+  flex: 1 1 130px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-family: 'Poppins', sans-serif;
+}
+
+.preview-pcs-box {
+  background: #e0f2fe;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  color: #0284c7;
+  font-weight: bold;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.preview-pcs-box span {
+  font-size: 17px;
+}
+
+.mutasi-table-box {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  min-height: 90px;
+  padding: 10px;
+}
+
+.empty-mutasi-text {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  margin: 25px 0;
+  font-size: 13px;
+}
+
+/* ==========================================
+   MODAL & FORM CARD
+========================================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  max-width: 480px;
+  padding: 18px;
+  border-radius: 12px;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--primary-blue);
+  font-size: 16px;
+}
+
+.modal-header i.fa-times {
+  font-size: 20px;
+  color: #888;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.keranjang-list {
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #cbd5e1;
+  padding-bottom: 8px;
+  gap: 8px;
+}
+
+.icon-diskon-item {
+  background: #e0f2fe;
+  color: var(--primary-blue);
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 3px;
+}
+
+.diskon-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+}
+
+.diskon-panel input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+.total-box {
+  background: #eef7f8;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 14px;
+  border: 1px solid var(--primary-blue);
+}
+
+.total-box h4 {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: #555;
+}
+
+.total-box h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--primary-blue);
+}
+
+.kembalian-box {
+  display: none;
+  background: #fdf5e6;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 12px;
+  border: 1px solid #f0c14b;
+  font-weight: bold;
+  color: #b12704;
+}
+
+.form-card {
+  background: white;
+  padding: 20px 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  max-width: 540px;
+  margin: 0 auto;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.form-card h3 {
+  color: var(--primary-blue);
+  margin-top: 0;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  text-align: center;
+  font-size: 17px;
+}
+
+/* ==========================================
+   NGAMPAS & PIUTANG BOXES (POIN 8 & 9)
+========================================== */
+.section-header-box h2 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  color: var(--primary-blue);
+}
+
+.info-banner-blue {
+  background: #eef2ff;
+  color: #3730a3;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  border: 1px solid #c7d2fe;
+  margin-bottom: 16px;
+}
+
+.info-banner-yellow {
+  background: #fff3cd;
+  color: #856404;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  border: 1px solid #ffeeba;
+  margin-bottom: 16px;
+}
+
+.ngampas-setoran-box {
+  background: #f0fdf4;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #bbf7d0;
+  margin-bottom: 14px;
+}
+
+.input-setoran-hijau {
+  width: 140px;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 6px 10px;
+  text-align: right;
+  border: 2px solid #10b981;
+  border-radius: 6px;
+  color: #15803d;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+}
+
+.piutang-summary-box {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid var(--primary-blue);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   LAPORAN & RIWAYAT (POIN 2 & 10)
+========================================== */
+.lap-menu-banner {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.lap-menu-banner h3 {
+  margin: 0 0 4px 0;
+  color: var(--primary-blue);
+  font-size: 16px;
+}
+
+.lap-menu-banner div {
+  font-size: 12px;
+  color: #666;
+}
+
+.lap-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 16px;
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.lap-menu-item {
+  background: white;
+  padding: 16px 10px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+}
+
+.lap-circle {
+  width: 72px;
+  height: 72px;
+  background: var(--primary-blue);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 10px auto;
+}
+
+.lap-circle i {
+  font-size: 32px;
+  color: white;
+}
+
+.lap-menu-title {
+  font-weight: 600;
+  color: var(--primary-blue);
+  font-size: 14px;
+}
+
+/* Tanpa margin negatif agar tidak melebar di HP */
+.lap-header-bar {
+  background: #334155;
+  color: white;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  margin: 0 0 15px 0;
+  text-align: center;
+  font-size: 12px;
+}
+
+.lap-header-item {
+  background: rgba(255,255,255,0.08);
+  padding: 8px 6px;
+  border-radius: 6px;
+}
+
+.lap-header-item b {
+  font-size: 14px;
+  display: block;
+  margin-top: 2px;
+}
+
+.btn-periode {
+  background: var(--primary-blue);
+  color: white;
+  padding: 11px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.lap-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.lap-card-header {
+  background: #f8fafc;
+  padding: 12px 15px;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 14px;
+}
+
+.lap-box-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 12px;
+}
+
+.lap-box {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-align: center;
+  overflow: hidden;
+  background: #fff;
+}
+
+.lap-box-top {
+  padding: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+}
+
+.lap-box-val {
+  background: #334155;
+  color: white;
+  padding: 8px 6px;
+  font-weight: bold;
+  font-size: 13px;
+  word-break: break-word;
+}
+
+.lap-list-item {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.lap-list-title {
+  font-weight: 600;
+  color: var(--primary-blue);
+  margin-bottom: 3px;
+  font-size: 14px;
+}
+
+.lap-badge {
+  background: #334155;
+  color: white;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.btn-rincian {
+  background: #f1f5f9;
+  color: var(--primary-blue);
+  padding: 11px 15px;
+  text-align: center;
+  display: block;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-top: 1px solid #e2e8f0;
+}
+
+.rincian-top-nav {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 10px;
+}
+
+.rincian-periode-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--primary-blue);
+}
+
+.rincian-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.view-toggle-group {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+}
+
+.view-toggle-group button {
+  padding: 8px 14px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.rincian-table-wrapper {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  background: #475569;
+  color: white;
+  padding: 10px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: left;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+tr.row-total td {
+  background: #e2e8f0;
+  font-weight: 700;
+}
+
+.btn-per-item {
+  display: block;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #f1f5f9;
+  background: white;
+  text-align: left;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.btn-per-item:hover {
+  background: #f0f9ff;
+  color: var(--primary-blue);
+}
+
+.tabs-container,
+.stok-tabs {
+  display: flex;
+  margin-bottom: 14px;
+  border-bottom: 2px solid #e2e8f0;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.tab-btn,
+.stok-tab-btn {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #64748b;
+  border-bottom: 3px solid transparent;
+  font-size: 14px;
+  flex: 1;
+  text-align: center;
+}
+
+.tab-btn.active,
+.stok-tab-btn.active {
+  color: var(--primary-blue);
+  border-bottom-color: var(--primary-blue);
+}
+
+.tab-content,
+.stok-tab-content {
+  display: none;
+}
+
+.tab-content.active,
+.stok-tab-content.active {
+  display: block;
+  animation: fadeIn 0.25s;
+}
+
+.stok-box-val {
+  font-size: 24px;
+  color: var(--primary-blue);
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+.pengeluaran-val {
+  font-size: 26px;
+  font-weight: bold;
+  color: var(--red-delete);
+  text-align: center;
+  padding: 18px;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-bar-box {
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.filter-bar-box input[type="date"],
+.filter-bar-box select {
+  width: auto;
+  flex: 1 1 130px;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge.lunas { background: #d4edda; color: #155724; }
+.badge.hutang { background: #f8d7da; color: #721c24; }
+.badge.pengeluaran { background: #fee2e2; color: #991b1b; }
+.badge.pemasukan { background: #dcfce7; color: #166534; }
+.badge.stok { background: #e0f2fe; color: #075985; }
+
+.badge-in {
+  background: #dcfce7;
+  color: #15803d;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.badge-out {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.btn-aksi {
+  background: #e2e8f0;
+  color: #333;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 4px;
+  font-size: 12px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-aksi.btn-bayar-htg {
+  background: var(--accent-green);
+  color: white;
+}
+
+.chart-wrapper {
+  width: 100%;
+  max-height: 320px;
+  background: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+canvas {
+  max-height: 290px !important;
+  width: 100% !important;
+}
+
+/* ==========================================
+   STRUK & TOMBOL PRINTER BLUETOOTH 58MM (POIN 11)
+========================================== */
+.struk-card-wrapper {
+  max-width: 360px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.area-struk {
+  background: white;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #000;
+  font-size: 12px;
+  border: 1px dashed #ccc;
+}
+
+.struk-actions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-cetak-bt {
+  width: 100%;
+  padding: 13px;
+  background: #0284c7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-cetak-rawbt {
+  padding: 11px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-cetak-browser {
+  padding: 11px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ==========================================
+   MEDIA QUERIES: DESKTOP (>= 768px) & HP (<= 767px)
+========================================== */
+@media (min-width: 768px) {
+  .sidebar {
+    left: 0;
+  }
+  .main-wrapper {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+  }
+  .topbar i.fa-bars {
+    display: none;
+  }
+  .keranjang-bar {
+    left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+  }
+  .lap-header-bar {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .lap-box-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .content-area {
+    padding: 12px;
+  }
+  .topbar {
+    padding: 12px 14px;
+  }
+  .topbar-title {
+    font-size: 15px;
+  }
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .menu-card {
+    padding: 15px 8px;
+  }
+  .menu-card i {
+    font-size: 26px;
+  }
+  .menu-card h3 {
+    font-size: 13px;
+  }
+  .form-card {
+    padding: 15px 12px;
+  }
+  .modal-content {
+    padding: 15px;
+  }
+  th, td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .btn-wa.btn-inline {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}
+
+/* ==========================================
+   ATURAN CETAK KERTAS THERMAL 58MM (POIN 11)
+========================================== */
+@page {
+  size: 58mm auto;
+  margin: 0;
+}
+
+@media print {
+  html, body {
+    width: 58mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #page-struk,
+  #page-struk *,
+  #tampilan-struk,
+  #tampilan-struk * {
+    visibility: visible;
+  }
+  #page-struk {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 58mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .struk-card-wrapper {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 58mm !important;
+    max-width: 58mm !important;
+  }
+  .area-struk {
+    border: none !important;
+    width: 58mm !important;
+    max-width: 58mm !important;
+    padding: 2mm !important;
+    margin: 0 !important;
+    font-size: 11px !important;
+  }
+  .no-print,
+  button,
+  .topbar,
+  .sidebar {
+    display: none !important;
+  }
+}
+/* ==========================================
+   DESAIN LAPORAN RAMAH ORANG TUA & REKAP SEARCH (POIN 1, 2, 3)
+========================================== */
+.mama-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.mama-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.mama-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.mama-card-desc {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 10px;
+}
+
+.mama-card-val {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.rekap-search-card {
+  background: #f0f9ff;
+  border: 2px solid #bae6fd;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.rekap-search-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0369a1;
+  margin-bottom: 6px;
+}
+
+.rekap-hasil-banner {
+  background: #dcfce7;
+  border: 2px solid #22c55e;
+  color: #14532d;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.rekap-hasil-bannerpeng {
+  background: #fee2e2;
+  border: 2px solid #ef4444;
+  color: #7f1d1d;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.khusus-group-card {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.khusus-group-header {
+  background: #f1f5f9;
+  padding: 12px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #cbd5e1;
+}
+/* =========================================================
+   TOMBOL KEMBALI & REFRESH SISTEM DI TOPBAR & SUB-HALAMAN
+========================================================= */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-topbar-nav,
+.btn-topbar-refresh {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 6px 11px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.btn-topbar-nav:hover,
+.btn-topbar-refresh:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-topbar-refresh:active,
+.btn-topbar-nav:active {
+  transform: scale(0.96);
+}
+
+/* Baris Navigasi Kembali di Dalam Sub-Halaman Laporan */
+.subpage-nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.btn-kembali-sub {
+  background: #64748b;
+  color: #ffffff;
+  border: none;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.btn-kembali-sub:hover {
+  background: #475569;
+}
+
+.btn-rincian-harian-top {
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Toast Notifikasi Refresh */
+.toast-sistem {
+  position: fixed;
+  top: 65px;
+  right: 15px;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 3000;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.toast-sistem.show {
+  display: inline-flex;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@media (max-width: 480px) {
+  .btn-topbar-nav span,
+  .btn-topbar-refresh span {
+    display: none; /* Di layar HP kecil tampilkan ikon saja agar judul tidak sempit */
+  }
+  .btn-topbar-nav,
+  .btn-topbar-refresh {
+    padding: 7px 10px;
+    font-size: 13px;
+  }
+}
