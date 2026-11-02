@@ -1,7 +1,7 @@
 // ==========================================
 // KONFIGURASI UTAMA SPREADSHEET
 // ==========================================
-var SPREADSHEET_ID = "1641aeDVFxTD7XMmx9fvhzxFLVzzYYaNE76rj6ruXoj0";
+var SPREADSHEET_ID = "1YGUEjmgn-LNlAcD52vApdRkMKlZ5ECiC06T3e08JLLM";
 
 function getSpreadsheet() {
   return SpreadsheetApp.openById(SPREADSHEET_ID);

@@ -889,10 +889,11 @@ function gantiTabRiwayat(tabId, element) {
 }
 
 function hitungRingkasanRiwayat(data) {
-  var tMasuk = 0;
-  var tKeluar = 0;
-  var tSetor = 0;
-  var tTutup = 0;
+  var tMasuk = 0;      // Murni pemasukan transaksi hari ini (tanpa Saldo Pindahan kemarin)
+  var tSaldoAwal = 0;  // Menampung Saldo Pindahan dari hari sebelumnya
+  var tKeluar = 0;     // Murni Pengeluaran Operasional Toko
+  var tSetor = 0;      // Setoran Tunai & Auto-Setor Transfer ke Bunda
+  var tTutup = 0;      // Tutup Kas (pemindahan sisa laci ke besok)
 
   var adaArusKas = data.some(function (r) {
     var j = r.jenis || "";
@@ -912,7 +913,10 @@ function hitungRingkasanRiwayat(data) {
       }
     } else if (jenisStr.includes("Pemasukan") || jenisStr.includes("Arus Kas Masuk")) {
       var stringCek = (jenisStr + " " + statusStr + " " + rincianStr).toLowerCase();
-      if (!stringCek.includes("penjualan kasir")) {
+      if (stringCek.includes("saldo pindahan")) {
+        // Pisahkan Saldo Pindahan agar tidak menggelembungkan Total Pemasukan hari ini
+        tSaldoAwal += r.nominal || 0;
+      } else if (!stringCek.includes("penjualan kasir")) {
         tMasuk += r.nominal || 0;
       }
     } else if (jenisStr.includes("Pengeluaran") || jenisStr.includes("Arus Kas Keluar")) {
@@ -927,7 +931,8 @@ function hitungRingkasanRiwayat(data) {
     }
   });
 
-  var tSisa = tMasuk - tKeluar - tSetor - tTutup;
+  // Sisa Uang Laci tetap menghitung Saldo Awal + Pemasukan - Pengeluaran - Setoran - Tutup Kas (Tetap Rp 0 saat sudah tutup kas)
+  var tSisa = tSaldoAwal + tMasuk - tKeluar - tSetor - tTutup;
 
   if (getEl("riw-masuk")) getEl("riw-masuk").innerText = formatRupiah(tMasuk);
   if (getEl("riw-keluar")) getEl("riw-keluar").innerText = formatRupiah(tKeluar);
@@ -946,11 +951,48 @@ function generateTabelRiwayat(data, idTabel) {
     html += "<tr><td colspan='8' style='text-align:center;'>Tidak ada data transaksi</td></tr>";
   } else {
     data.forEach(function (r) {
+      var teksStatus = r.status || "";
       var bgBadge = "badge lunas";
-      if (r.status === "Hutang") bgBadge = "badge hutang";
-      else if (r.status === "Pengeluaran") bgBadge = "badge pengeluaran";
-      else if (r.status === "Pemasukan") bgBadge = "badge pemasukan";
-      else if (r.status === "Stok") bgBadge = "badge stok";
+      var styleCustomBadge = "";
+      var infoNominalTambahan = "";
+      var styleNominal = "font-weight:bold;";
+      var rincianLower = ((r.status || "") + " " + (r.rincian || "")).toLowerCase();
+
+      if (r.status === "Hutang") {
+        bgBadge = "badge hutang";
+      } else if ((r.status || "").toLowerCase() === "dilunasi") {
+        bgBadge = "badge";
+        styleCustomBadge = "background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc;";
+        teksStatus = "Nota Dilunasi";
+        styleNominal = "font-weight:600; color:#64748b;";
+        infoNominalTambahan = "<br><small style='color:#0284c7; font-size:10px;'>(Kas tercatat di Pelunasan)</small>";
+      } else if (r.status === "Pengeluaran") {
+        if (rincianLower.includes("setoran")) {
+          bgBadge = "badge";
+          styleCustomBadge = "background:#fef3c7; color:#b45309; border:1px solid #f59e0b;";
+          teksStatus = "Setoran Bunda";
+        } else if (rincianLower.includes("tutup kas") || rincianLower.includes("pindah saldo")) {
+          bgBadge = "badge";
+          styleCustomBadge = "background:#e2e8f0; color:#475569;";
+          teksStatus = "Tutup Kas";
+        } else {
+          bgBadge = "badge pengeluaran";
+          teksStatus = "Pengeluaran Toko";
+        }
+      } else if (r.status === "Pemasukan") {
+        if (rincianLower.includes("saldo pindahan")) {
+          bgBadge = "badge stok";
+          teksStatus = "Saldo Pindahan";
+          infoNominalTambahan = "<br><small style='color:#64748b; font-size:10px;'>(Sisa Kas Kemarin)</small>";
+        } else if (rincianLower.includes("pelunasan")) {
+          bgBadge = "badge pemasukan";
+          teksStatus = "Kas Pelunasan";
+        } else {
+          bgBadge = "badge pemasukan";
+        }
+      } else if (r.status === "Stok") {
+        bgBadge = "badge stok";
+      }
 
       var tombolAksi = "";
       if (r.jenis === "Penjualan") {
@@ -1024,12 +1066,18 @@ function generateTabelRiwayat(data, idTabel) {
         teksBarang +
         "</td><td>" +
         r.rincian +
-        "</td><td><b>" +
-        formatRupiah(r.nominal) +
-        "</b></td><td><span class='" +
-        bgBadge +
+        "</td><td><span style='" +
+        styleNominal +
         "'>" +
-        r.status +
+        formatRupiah(r.nominal) +
+        "</span>" +
+        infoNominalTambahan +
+        "</td><td><span class='" +
+        bgBadge +
+        "' style='" +
+        styleCustomBadge +
+        "'>" +
+        teksStatus +
         "</span></td><td class='kolom-aksi' style='white-space:nowrap;'>" +
         tombolAksi +
         "</td></tr>";
