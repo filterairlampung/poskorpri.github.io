@@ -1796,3 +1796,369 @@ canvas {
     font-size: 13px;
   }
 }
+/* ================= STYLING PANEL CHAT ASISTEN AI ================= */
+#ai-assistant-wrapper {
+  font-family: 'Poppins', sans-serif;
+  z-index: 9990;
+}
+
+/* Tombol Melayang (FAB) di Pojok Kanan Bawah */
+.ai-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+  z-index: 9991;
+}
+
+.ai-fab:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 10px 25px rgba(2, 132, 199, 0.6);
+}
+
+.ai-fab:active {
+  transform: scale(0.95);
+}
+
+.ai-fab-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #f59e0b;
+  color: #111827;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  letter-spacing: 0.5px;
+}
+
+/* Slide-up Drawer Jendela Chat */
+.ai-drawer {
+  position: fixed;
+  bottom: 94px;
+  right: 24px;
+  width: 390px;
+  max-width: calc(100vw - 32px);
+  height: 560px;
+  max-height: calc(100vh - 120px);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.22);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(24px) scale(0.97);
+  transform-origin: bottom right;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+  z-index: 9992;
+}
+
+.ai-drawer.ai-drawer-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* Header Drawer */
+.ai-drawer-header {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #ffffff;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ai-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ai-header-title i {
+  font-size: 20px;
+  color: #38bdf8;
+}
+
+.ai-header-title h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.ai-header-title small {
+  font-size: 11px;
+  color: #cbd5e1;
+  display: block;
+}
+
+.ai-header-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.ai-icon-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #f8fafc;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.ai-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* Selector Cabang */
+.ai-branch-bar {
+  background: #f1f5f9;
+  padding: 8px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: #334155;
+  font-weight: 500;
+}
+
+.ai-branch-select {
+  flex: 1;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+  outline: none;
+  cursor: pointer;
+}
+
+.ai-branch-select:focus {
+  border-color: #0284c7;
+}
+
+/* Chip Pertanyaan Cepat */
+.ai-quick-prompts {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.ai-quick-prompts::-webkit-scrollbar {
+  display: none;
+}
+
+.ai-quick-prompts button {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ai-quick-prompts button:hover {
+  background: #bae6fd;
+}
+
+/* Ruang Pesan Chat */
+.ai-chat-body {
+  flex: 1;
+  padding: 14px;
+  overflow-y: auto;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+  font-size: 13px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.ai-msg-bot {
+  align-self: flex-start;
+}
+
+.ai-msg-user {
+  align-self: flex-end;
+}
+
+.ai-msg-bubble {
+  padding: 10px 13px;
+  border-radius: 14px;
+  white-space: pre-wrap;
+}
+
+.ai-msg-bot .ai-msg-bubble {
+  background: #ffffff;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.ai-msg-user .ai-msg-bubble {
+  background: #0284c7;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.ai-msg-time {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 3px;
+  padding: 0 4px;
+}
+
+.ai-msg-user .ai-msg-time {
+  text-align: right;
+}
+
+/* Indikator Mengetik (Loading) */
+.ai-typing-dots {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 4px 2px;
+}
+
+.ai-typing-dots span {
+  width: 6px;
+  height: 6px;
+  background: #64748b;
+  border-radius: 50%;
+  animation: aiBounce 1.3s infinite ease-in-out;
+}
+
+.ai-typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+.ai-typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes aiBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* Area Input Bawah */
+.ai-chat-footer {
+  padding: 10px 12px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.ai-chat-input {
+  flex: 1;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  max-height: 90px;
+  resize: none;
+  outline: none;
+  line-height: 1.4;
+}
+
+.ai-chat-input:focus {
+  border-color: #0284c7;
+}
+
+.ai-send-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.ai-send-btn:hover:not(:disabled) {
+  background: #0369a1;
+}
+
+.ai-send-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Responsif Layar HP Kasir */
+@media (max-width: 600px) {
+  .ai-fab {
+    bottom: 16px;
+    right: 16px;
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+  }
+
+  .ai-drawer {
+    right: 12px;
+    left: 12px;
+    bottom: 78px;
+    width: auto;
+    max-width: none;
+    height: 72vh;
+    max-height: calc(100vh - 96px);
+  }
+}
+
+/* Wajib Sembunyikan Saat Cetak Struk Thermal 58mm */
+@media print {
+  #ai-assistant-wrapper,
+  .ai-fab,
+  .ai-drawer {
+    display: none !important;
+  }
+}

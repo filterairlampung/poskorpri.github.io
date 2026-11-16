@@ -4889,3 +4889,267 @@ function jalankanTutupKasMasaLalu() {
     }
   });
 }
+/* =========================================================================
+   MODUL ASISTEN AI AL-KAUTSAR (ISOLATED ADMIN-ONLY MODULE)
+   ========================================================================= */
+
+const AI_CONFIG = {
+  apiKey: "RAHASIA_ALKAUTSAR_2026",
+  // Mengambil variabel URL Web App yang sudah ada di app.js, atau fallback ke URL Web App Korpri
+  getEndpointUrl: function () {
+    if (typeof GAS_WEB_APP_URL !== "undefined" && GAS_WEB_APP_URL) return GAS_WEB_APP_URL;
+    if (typeof API_URL !== "undefined" && API_URL) return API_URL;
+    if (typeof SCRIPT_URL !== "undefined" && SCRIPT_URL) return SCRIPT_URL;
+    return "https://script.google.com/macros/s/AKfycbzAo2Do8dRn9otPWdKVIhnBoERpjCcEqZ5P3saGJ_wyu8ghM50jy-x6mEIU6yB2xMSZ0A/exec";
+  }
+};
+
+let isAiRequestInFlight = false;
+
+/**
+ * Memastikan pengguna yang sedang login benar-benar memiliki role Admin
+ * berdasarkan localStorage key 'pos_session'.
+ */
+function isUserAdminAktif() {
+  try {
+    const rawSession = localStorage.getItem("pos_session");
+    if (!rawSession) return false;
+    const sesi = JSON.parse(rawSession);
+    const masihBerlaku = sesi.expiry && Date.now() < sesi.expiry;
+    return masihBerlaku && String(sesi.role).toLowerCase() === "admin";
+  } catch (err) {
+    return false;
+  }
+}
+
+/**
+ * Membuka / menutup Slide-up Drawer Chat AI
+ */
+function togglePanelAI() {
+  if (!isUserAdminAktif()) {
+    alert("Akses ditolak: Fitur Asisten AI khusus untuk Admin.");
+    return;
+  }
+
+  const drawer = document.getElementById("ai-chat-drawer");
+  const fabIcon = document.getElementById("ai-fab-icon");
+  if (!drawer) return;
+
+  const isOpen = drawer.classList.toggle("ai-drawer-open");
+  drawer.setAttribute("aria-hidden", !isOpen);
+
+  if (fabIcon) {
+    fabIcon.className = isOpen ? "fa-solid fa-xmark" : "fa-solid fa-robot";
+  }
+
+  if (isOpen) {
+    const inputEl = document.getElementById("ai-chat-input");
+    if (inputEl) setTimeout(() => inputEl.focus(), 150);
+  }
+}
+
+/**
+ * Mengirim pertanyaan dari tombol Quick Prompts
+ */
+function kirimPromptCepat(teksPrompt) {
+  const inputEl = document.getElementById("ai-chat-input");
+  if (!inputEl || isAiRequestInFlight) return;
+  inputEl.value = teksPrompt;
+  eksekusiTanyaAsistenAI(teksPrompt);
+}
+
+/**
+ * Handler submit form chat AI
+ */
+function handleSubmitChatAI(event) {
+  if (event) event.preventDefault();
+  if (isAiRequestInFlight) return;
+
+  const inputEl = document.getElementById("ai-chat-input");
+  const pertanyaan = inputEl ? inputEl.value.trim() : "";
+  if (!pertanyaan) return;
+
+  eksekusiTanyaAsistenAI(pertanyaan);
+}
+
+/**
+ * Mengirim HTTP POST langsung ke Google Apps Script dengan struktur JSON flat di level root:
+ * { action: "tanyaAsistenAI", apiKey: "...", cabang: "...", pertanyaan: "..." }
+ */
+async function eksekusiTanyaAsistenAI(pertanyaan) {
+  if (!isUserAdminAktif()) {
+    tampilkanBubbleChatAI("Sesi Admin berakhir atau tidak valid. Silakan login ulang.", "bot");
+    return;
+  }
+
+  const inputEl = document.getElementById("ai-chat-input");
+  const sendBtn = document.getElementById("ai-send-btn");
+  const selectCabang = document.getElementById("ai-select-cabang");
+  const cabangTerpilih = selectCabang ? selectCabang.value : "korpri";
+  const labelCabang = cabangTerpilih === "pringsewu" ? "Pringsewu" : "Korpri";
+
+  // Tampilkan pesan pengguna di layar chat
+  tampilkanBubbleChatAI(`[${labelCabang}] ${pertanyaan}`, "user");
+  if (inputEl) {
+    inputEl.value = "";
+    inputEl.style.height = "auto";
+  }
+
+  // Kunci tombol selama menunggu respons AI
+  isAiRequestInFlight = true;
+  if (sendBtn) sendBtn.disabled = true;
+  const loadingId = tampilkanIndikatorMengetikAI();
+
+  // Payload flat di tingkat root sesuai pembacaan doPost(e) di kode.js
+  const rootPayload = {
+    action: "tanyaAsistenAI",
+    apiKey: AI_CONFIG.apiKey,
+    cabang: cabangTerpilih,
+    pertanyaan: pertanyaan
+  };
+
+  try {
+    const response = await fetch(AI_CONFIG.getEndpointUrl(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(rootPayload)
+    });
+
+    const result = await response.json();
+    hapusIndikatorMengetikAI(loadingId);
+
+    if (result && (result.status === "sukses" || result.jawaban || result.reply || result.pesan)) {
+      const teksJawaban =
+        result.jawaban ||
+        result.reply ||
+        result.data ||
+        result.pesan ||
+        "Permintaan berhasil diproses.";
+
+      if (result.status === "gagal") {
+        tampilkanBubbleChatAI("⚠️ Gagal: " + (result.pesan || "Terjadi kesalahan di server."), "bot");
+      } else {
+        tampilkanBubbleChatAI(String(teksJawaban), "bot");
+      }
+    } else {
+      tampilkanBubbleChatAI("⚠️ Respons server tidak dikenali: " + JSON.stringify(result), "bot");
+    }
+  } catch (error) {
+    hapusIndikatorMengetikAI(loadingId);
+    tampilkanBubbleChatAI(
+      "⚠️ Gagal terhubung ke server AI. Periksa koneksi internet Anda (" + error.message + ").",
+      "bot"
+    );
+  } finally {
+    isAiRequestInFlight = false;
+    if (sendBtn) sendBtn.disabled = false;
+  }
+}
+
+/**
+ * Memformat teks Markdown sederhana (bold **teks** dan bullet) dengan aman dari XSS
+ */
+function formatTeksAmanAI(teksMentah) {
+  const escaped = String(teksMentah)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  return escaped.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+}
+
+/**
+ * Menambahkan gelembung pesan (user / bot) ke dalam ruang chat
+ */
+function tampilkanBubbleChatAI(teks, pengirim) {
+  const container = document.getElementById("ai-chat-messages");
+  if (!container) return;
+
+  const waktuSekarang = new Date().toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  const wrapper = document.createElement("div");
+  wrapper.className = `ai-msg ${pengirim === "user" ? "ai-msg-user" : "ai-msg-bot"}`;
+
+  const bubble = document.createElement("div");
+  bubble.className = "ai-msg-bubble";
+  bubble.innerHTML = formatTeksAmanAI(teks);
+
+  const timeTag = document.createElement("span");
+  timeTag.className = "ai-msg-time";
+  timeTag.textContent = waktuSekarang;
+
+  wrapper.appendChild(bubble);
+  wrapper.appendChild(timeTag);
+  container.appendChild(wrapper);
+  container.scrollTop = container.scrollHeight;
+}
+
+/**
+ * Menampilkan animasi titik mengetik saat menunggu balasan GAS
+ */
+function tampilkanIndikatorMengetikAI() {
+  const container = document.getElementById("ai-chat-messages");
+  const idUnik = "ai-loading-" + Date.now();
+  if (!container) return idUnik;
+
+  const wrapper = document.createElement("div");
+  wrapper.id = idUnik;
+  wrapper.className = "ai-msg ai-msg-bot";
+  wrapper.innerHTML = `
+    <div class="ai-msg-bubble">
+      <div class="ai-typing-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  `;
+
+  container.appendChild(wrapper);
+  container.scrollTop = container.scrollHeight;
+  return idUnik;
+}
+
+function hapusIndikatorMengetikAI(idUnik) {
+  const el = document.getElementById(idUnik);
+  if (el) el.remove();
+}
+
+/**
+ * Membersihkan riwayat percakapan di layar
+ */
+function bersihkanChatAI() {
+  const container = document.getElementById("ai-chat-messages");
+  if (!container) return;
+  container.innerHTML = `
+    <div class="ai-msg ai-msg-bot">
+      <div class="ai-msg-bubble">
+        Riwayat percakapan dibersihkan. Silakan pilih cabang dan ajukan pertanyaan baru.
+      </div>
+      <span class="ai-msg-time">Sistem Siap</span>
+    </div>
+  `;
+}
+
+/**
+ * Inisialisasi Event Listener khusus input chat AI (Enter untuk kirim, Shift+Enter baris baru)
+ */
+document.addEventListener("DOMContentLoaded", function () {
+  const inputEl = document.getElementById("ai-chat-input");
+  if (inputEl) {
+    inputEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSubmitChatAI(e);
+      }
+    });
+
+    inputEl.addEventListener("input", function () {
+      this.style.height = "auto";
+      this.style.height = Math.min(this.scrollHeight, 90) + "px";
+    });
+  }
+});

@@ -1160,6 +1160,85 @@
   </div> <!-- End .app-root -->
 
   <!-- Script Aplikasi Utama -->
+<!-- ================= PANEL CHAT ASISTEN AI (ADMIN ONLY) ================= -->
+<div id="ai-assistant-wrapper" class="admin-only">
+  <!-- Tombol Melayang (FAB) -->
+  <button id="ai-fab-btn" class="ai-fab admin-only" onclick="togglePanelAI()" title="Tanya Asisten AI Al-Kautsar" type="button">
+    <i class="fa-solid fa-robot" id="ai-fab-icon"></i>
+    <span class="ai-fab-badge">AI</span>
+  </button>
+
+  <!-- Slide-up Drawer Chat AI -->
+  <div id="ai-chat-drawer" class="ai-drawer admin-only" aria-hidden="true">
+    <!-- Header Drawer -->
+    <div class="ai-drawer-header">
+      <div class="ai-header-title">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <div>
+          <h4>Asisten AI Al-Kautsar</h4>
+          <small>Analitik Kas, Stok & Piutang Lintas Cabang</small>
+        </div>
+      </div>
+      <div class="ai-header-actions">
+        <button type="button" class="ai-icon-btn" onclick="bersihkanChatAI()" title="Bersihkan Riwayat Chat">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+        <button type="button" class="ai-icon-btn" onclick="togglePanelAI()" title="Tutup Panel">
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Toolbar Pilihan Cabang -->
+    <div class="ai-branch-bar">
+      <label for="ai-select-cabang">
+        <i class="fa-solid fa-store"></i> Target Data Cabang:
+      </label>
+      <select id="ai-select-cabang" class="ai-branch-select">
+        <option value="korpri">Cabang Korpri (Bandar Lampung)</option>
+        <option value="pringsewu">Cabang Pringsewu</option>
+      </select>
+    </div>
+
+    <!-- Chip Pertanyaan Cepat (Quick Prompts) -->
+    <div class="ai-quick-prompts">
+      <button type="button" onclick="kirimPromptCepat('Ringkasan omzet, laba bersih, dan saldo kas laci hari ini')">
+        💰 Ringkasan Kas Hari Ini
+      </button>
+      <button type="button" onclick="kirimPromptCepat('Daftar barang yang stoknya menipis di bawah 10 pcs')">
+        📦 Stok Menipis (&lt;10)
+      </button>
+      <button type="button" onclick="kirimPromptCepat('Daftar piutang pelanggan dan ngampas yang belum lunas')">
+        📝 Piutang &amp; Ngampas Aktif
+      </button>
+    </div>
+
+    <!-- Area Pesan Chat -->
+    <div id="ai-chat-messages" class="ai-chat-body">
+      <div class="ai-msg ai-msg-bot">
+        <div class="ai-msg-bubble">
+          Halo Bos! Pilih cabang di atas (<strong>Korpri</strong> atau <strong>Pringsewu</strong>) lalu tanyakan kondisi stok, arus kas, laba, atau piutang.
+        </div>
+        <span class="ai-msg-time">Sistem Siap</span>
+      </div>
+    </div>
+
+    <!-- Form Input Pertanyaan -->
+    <form id="ai-chat-form" class="ai-chat-footer" onsubmit="handleSubmitChatAI(event)">
+      <textarea 
+        id="ai-chat-input" 
+        class="ai-chat-input" 
+        rows="1" 
+        placeholder="Ketik pertanyaan untuk AI... (Enter = kirim)"
+        required
+      ></textarea>
+      <button type="submit" id="ai-send-btn" class="ai-send-btn" title="Kirim Pertanyaan">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+</div>
+<!-- ================= END PANEL CHAT ASISTEN AI ================= -->
   <script src="app.js"></script>
 </body>
 </html>
