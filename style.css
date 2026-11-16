@@ -1800,6 +1800,7 @@ canvas {
 #ai-assistant-wrapper {
   font-family: 'Poppins', sans-serif;
   z-index: 9990;
+  bottom: 85px !important;
 }
 
 /* Tombol Melayang (FAB) di Pojok Kanan Bawah */
