@@ -4905,6 +4905,7 @@ const AI_CONFIG = {
 };
 
 let isAiRequestInFlight = false;
+let riwayatChatAI = [];
 
 /**
  * Memastikan pengguna yang sedang login benar-benar memiliki role Admin
@@ -5002,10 +5003,11 @@ async function eksekusiTanyaAsistenAI(pertanyaan) {
 
   // Payload flat di tingkat root sesuai pembacaan doPost(e) di kode.js
   const rootPayload = {
-    action: "tanyaAsistenAI",
-    apiKey: AI_CONFIG.apiKey,
-    cabang: cabangTerpilih,
-    pertanyaan: pertanyaan
+  action: "tanyaAsistenAI",
+  apiKey: AI_CONFIG.apiKey,
+  cabang: cabangTerpilih,
+  pertanyaan: pertanyaan,
+  riwayat: riwayatChatAI
   };
 
   try {
@@ -5032,6 +5034,9 @@ async function eksekusiTanyaAsistenAI(pertanyaan) {
         tampilkanBubbleChatAI("⚠️ Gagal: " + (result.pesan || "Terjadi kesalahan di server."), "bot");
       } else {
         tampilkanBubbleChatAI(String(teksJawaban), "bot");
+        riwayatChatAI.push({ role: "user", text: `[Cabang ${labelCabang}] ${pertanyaan}` });
+        riwayatChatAI.push({ role: "model", text: String(teksJawaban) });
+        if (riwayatChatAI.length > 8) riwayatChatAI = riwayatChatAI.slice(-8);
       }
     } else {
       tampilkanBubbleChatAI("⚠️ Respons server tidak dikenali: " + JSON.stringify(result), "bot");
